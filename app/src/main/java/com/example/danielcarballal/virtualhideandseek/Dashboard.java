@@ -25,7 +25,7 @@ public class Dashboard extends AppCompatActivity {
         setSupportActionBar(toolbar);
         BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
         //leScanner = ba.getBluetoothLeScanner();
-        Button fab = (Button) findViewById(R.id.search);
+        Button fab = (Button) findViewById(R.id.scan2);
 
 
         fab.setOnClickListener(new View.OnClickListener() {

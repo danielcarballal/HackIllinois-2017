@@ -34,7 +34,7 @@
         android:layout_marginTop="100dp" />
 
         <Button
-            android:id="@+id/search"
+            android:id="@+id/scan2"
             android:text="Search for address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -55,6 +55,12 @@
             android:text="User's name"
             android:ems="10"
             android:id="@+id/editText2" />
+
+        <Button
+            android:id="@+id/scan3"
+            android:text="Launch Game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
