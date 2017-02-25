@@ -1,5 +1,9 @@
 package com.example.danielcarballal.virtualhideandseek;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+
+import android.bluetooth.le.BluetoothLeScanner;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class Dashboard extends AppCompatActivity {
+    BluetoothLeScanner leScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +22,11 @@ public class Dashboard extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
+        leScanner = ba.getBluetoothLeScanner();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,4 +57,6 @@ public class Dashboard extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
