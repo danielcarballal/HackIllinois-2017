@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 public class Dashboard extends AppCompatActivity {
     BluetoothLeScanner leScanner;
@@ -23,8 +24,8 @@ public class Dashboard extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
-        leScanner = ba.getBluetoothLeScanner();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //leScanner = ba.getBluetoothLeScanner();
+        Button fab = (Button) findViewById(R.id.search);
 
 
         fab.setOnClickListener(new View.OnClickListener() {
