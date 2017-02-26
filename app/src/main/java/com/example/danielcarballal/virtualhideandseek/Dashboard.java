@@ -4,14 +4,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
 import android.bluetooth.le.BluetoothLeScanner;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 
 public class Dashboard extends AppCompatActivity {
@@ -20,43 +18,38 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.content_dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
-        //leScanner = ba.getBluetoothLeScanner();
-        Button fab = (Button) findViewById(R.id.scan2);
+        Button register = (Button) findViewById(R.id.register);
+        Button startgame = (Button) findViewById(R.id.startgame);
 
-
-        fab.setOnClickListener(new View.OnClickListener() {
+        startgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                goToChaserActivity();
             }
         });
+
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToRegisterTag();
+            }
+        });
+
+
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_dashboard, menu);
-        return true;
+    private void goToRegisterTag(){
+        Intent i = new Intent(this, RegisterTag.class);
+        startActivity(i);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    private void goToChaserActivity(){
+        Intent i = new Intent(this, ChaserActivity.class);
+        startActivity(i);
     }
 
 

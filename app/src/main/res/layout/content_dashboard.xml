@@ -26,35 +26,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="Hold the tag up to the phone. Your Mac address should appear below:"
-            android:layout_width="match_parent"
-            android:layout_height="114dp"
-            android:id="@+id/textView2"
-            android:layout_marginTop="100dp" />
-
         <Button
-            android:id="@+id/scan"
-            android:text="Search for address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:text="Test MAC"
-            android:layout_width="match_parent"
-            android:layout_height="114dp"
-            android:id="@+id/textView4"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textAlignment="center" />
-
-        <EditText
+            android:id="@+id/startgame"
+            android:text="Start game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="User's name"
-            android:ems="10"
-            android:id="@+id/editText2" />
+            android:layout_marginTop="200px"
+            android:padding="100px" />
+
+        <Button
+            android:id="@+id/register"
+            android:text="Register devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="100px" />
 
     </LinearLayout>
 

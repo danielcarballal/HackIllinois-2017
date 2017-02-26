@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+
+        <TextView
+            android:text="5:00"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/clock"
+            android:fontFamily="monospace"
+            android:textSize="48sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/name1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/name2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/name3"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/name4"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200px"
+            android:id="@+id/name5"
+            android:layout_weight="1" />
+
+    </FrameLayout>
+
+</LinearLayout>

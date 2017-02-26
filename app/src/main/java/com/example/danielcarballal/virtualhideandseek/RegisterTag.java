@@ -1,6 +1,7 @@
 package com.example.danielcarballal.virtualhideandseek;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -8,18 +9,18 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanRecord;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.util.SparseArray;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.view.Menu;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 /**
  * Created by danielcarballal on 25-2-17.
@@ -55,11 +56,52 @@ public class RegisterTag extends AppCompatActivity {
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView tx = (TextView) findViewById(R.id.textView4);
+                EditText editText = (EditText) findViewById(R.id.editText2);
+                String mac_add =  (String) tx.getText();
+                String user_name = editText.getText().toString();
+                if(mac_add.equals("Did not find device") || mac_add.equals("") || user_name.equals("User name")){
+                    warning();
+                } else{
+                    if(!GameLogic.getGameLogic().addPlayer(user_name, mac_add)){
+                        mac_in_use_warning(GameLogic.getGameLogic().getPlayer(mac_add));
+                    } else {
+                        success_added(user_name);
+                    };
+                }
 
-                System.out.println("GAAAAAAAME ON");
             }
         });
 
+    }
+
+    protected void warning(){
+        new AlertDialog.Builder(this).setTitle("No name or device set")
+                .setMessage("Please make sure you find a device and set your name")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                    }
+                }).show();
+    }
+    protected void mac_in_use_warning(String name){
+        new AlertDialog.Builder(this).setTitle("Device already being used!")
+                .setMessage("The device you tried to connect is by " + name)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                    }
+                }).show();
+    }
+
+    protected void success_added(String name){
+        new AlertDialog.Builder(this).setTitle("Successfully added device!")
+                .setMessage("Successfully added the user " + name)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                    }
+                }).show();
     }
 
     private void registerDevice(String MACAddress){
@@ -68,7 +110,6 @@ public class RegisterTag extends AppCompatActivity {
     }
 
     private void startScan(){
-        System.out.println("Start scan");
         ScanCallback sc = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
@@ -81,21 +122,18 @@ public class RegisterTag extends AppCompatActivity {
                 int correct_bytes = 0;
                 byte[] firstCon = record.getBytes();
                 int idx = 0;
-                System.out.println("Scan result: " + firstCon.length);
-                System.out.println(firstCon);
                 for (int i = 2; i < 5; i++) {
                     byte b = firstCon[i];
-                    System.out.println(b);
                     if( b == magic_bytes[idx])
                         correct_bytes++;
                     idx++;
                 }
 
-                if(correct_bytes == 3){
+                if(correct_bytes == 3 && GameLogic.getGameLogic().getPlayer(device.getAddress()) == null){
                     registerDevice(device.getAddress());
+                    stopScan();
                 }
                 else{
-                    System.out.println("Other result found");
                     return;
                 }
 
@@ -103,18 +141,13 @@ public class RegisterTag extends AppCompatActivity {
             }
         };
         leScanner.startScan(sc);
+    }
 
-        ScanCallback stp_scan = new ScanCallback() {
-            @Override
-            public void onScanResult(int callbackType, ScanResult result) {
-                System.out.print("Ending");
-                super.onScanResult(callbackType, result);
-            }
+    private void stopScan(){
+        ScanCallback sc = new ScanCallback() {
+
         };
-        long curTime = System.currentTimeMillis();
-        
-        leScanner.stopScan(stp_scan);
-
+        leScanner.stopScan(sc);
     }
 
 }
