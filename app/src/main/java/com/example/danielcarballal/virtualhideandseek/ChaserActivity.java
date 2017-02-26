@@ -55,7 +55,7 @@ public class ChaserActivity extends AppCompatActivity {
         gl.addLocation("arc", -67);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chaser_layout);
-        getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+        getWindow().getDecorView().setBackgroundColor(Color.GRAY);
         this.populateListView();
         BluetoothManager bm = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         BluetoothAdapter ba = bm.getAdapter();
@@ -65,7 +65,7 @@ public class ChaserActivity extends AppCompatActivity {
         int MANUFACTURE_ID = 14;
         int AVMODE = ADVERTISE_MODE_LOW_LATENCY;
         boolean CONNECT = false;
-        int TIMEOUT = 10000;
+        int TIMEOUT = 70000;
         int TX_POWER = ADVERTISE_TX_POWER_HIGH;
 
         AdvertiseData.Builder ADbuild = new AdvertiseData.Builder().addManufacturerData(MANUFACTURE_ID, magic_bytes_send);
@@ -140,6 +140,22 @@ public class ChaserActivity extends AppCompatActivity {
         time_elapsed = gl.startTime + 300000 - SystemClock.elapsedRealtime();
         long minutes = (time_elapsed % 60000)/1000;
         tv.setText(time_elapsed / 60000 + ":" + (minutes >= 10 ? "" : "0") + minutes);
+
+        for (int player = 0; player < gl.getNumPlayer(); player++) {
+            int AVGRssi = gl.GetAvgRssi(player);
+            String mac_addr = gl.getMacFromPlayer(player);
+            if (AVGRssi == 1) {
+                return;
+            }
+            else if(AVGRssi > -50){
+                hiderLoses(gl.getPlayer(mac_addr));
+            }
+
+            if(getColorFromDist(gl.playerDists.get(mac_addr)) != getColorFromDist(AVGRssi)){
+                populateListView();
+            }
+            //System.out.println("Average Rssi: " + AVGRssi);
+        }
     }
 
     private void startScan(){
@@ -148,28 +164,10 @@ public class ChaserActivity extends AppCompatActivity {
             public void onScanResult(int callbackType, ScanResult result) {
                 BluetoothDevice device = result.getDevice();
                 int rssi = result.getRssi();
-                ScanRecord record = result.getScanRecord();
 
-                int correct_bytes = 0;
-                byte[] firstCon = record.getBytes();
-                int idx = 0;
-                for (int i = 2; i < 5; i++) {
-                    byte b = firstCon[i];
-                    if( b == magic_bytes[idx])
-                        correct_bytes++;
-                    idx++;
-                }
-
-                if(correct_bytes == 3 && gl.playerExists(device.getAddress())){
-                    if(rssi > -50){
-                        hiderLoses(gl.getPlayer(device.getAddress()));
-                    }
-                    if(getColorFromDist(gl.playerDists.get(device.getAddress())) != getColorFromDist(rssi)){
-                        gl.addLocation(device.getAddress(), rssi);
-                        populateListView();
-                    } else{
-                        gl.addLocation(device.getAddress(), rssi);
-                    }
+                if(gl.playerExists(device.getAddress())){
+                    System.out.println("cur Rssi: " + rssi);
+                    gl.addLocation(device.getAddress(), rssi);
 
                 }
                 else{
@@ -179,7 +177,6 @@ public class ChaserActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, result);
 
             }
-
         };
         leScanner.startScan(sc);
     }
@@ -190,7 +187,7 @@ public class ChaserActivity extends AppCompatActivity {
         }
         if(rsiiDistance > -70)
            // return Color.rgb(255,205,152);// HUE 335
-            return Color.rgb(255,0,150);
+            return Color.rgb(230,50,150);
         if(rsiiDistance > -80){
             return Color.rgb(150,0,255); //HUE
         }
