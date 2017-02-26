@@ -10,7 +10,9 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanRecord;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -73,6 +75,20 @@ public class RegisterTag extends AppCompatActivity {
             }
         });
 
+        Button back = (Button) findViewById(R.id.back);
+        back.getBackground().setColorFilter(0x0000FF00, PorterDuff.Mode.MULTIPLY);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToDashboard();
+            }
+        });
+
+    }
+
+    private void goToDashboard(){
+        Intent i = new Intent(this, Dashboard.class);
+        startActivity(i);
     }
 
     protected void warning(){
@@ -84,6 +100,7 @@ public class RegisterTag extends AppCompatActivity {
                     }
                 }).show();
     }
+
     protected void mac_in_use_warning(String name){
         new AlertDialog.Builder(this).setTitle("Device already being used!")
                 .setMessage("The device you tried to connect is by " + name)

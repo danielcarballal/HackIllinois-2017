@@ -1,5 +1,6 @@
 package com.example.danielcarballal.virtualhideandseek;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -11,6 +12,8 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -37,11 +40,19 @@ public class ChaserActivity extends AppCompatActivity {
     BluetoothLeAdvertiser leAdvertiser;
     GameLogic gl;
     long time_elapsed = 300000;
-    String time_shown = "";
+    Timer stopWatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         gl = GameLogic.getGameLogic();
+        gl.startTimer();
+        gl.addPlayer("JAMES THE TURTLE", "abc");
+        gl.addPlayer("CARL THE HEDGEHOG", "bca");
+        gl.addPlayer("CHUCKY THE CHEETAH", "arc");
+        gl.addPlayer("EDDIE THE NARWHAL", "etn");
+        gl.addLocation("etn", -77);
+        gl.addLocation("bca", -51);
+        gl.addLocation("arc", -67);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chaser_layout);
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
@@ -70,14 +81,65 @@ public class ChaserActivity extends AppCompatActivity {
 
         leAdvertiser.startAdvertising(AS, AD, AC);
         startScan();
-        gl.startGame();
+        Timer time = new Timer();
 
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread( new Runnable() {
+                    @Override
+                    public void run(){
+                        updateTime();
+                    }
+                });
+            }
+        }, 0, 1000);
+
+        stopWatch = new Timer();
+        stopWatch.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread( new Runnable() {
+                    @Override
+                    public void run(){
+                        hiderWins();
+                    }
+                });
+            }
+        }, 300000);
+    }
+
+    private void hiderWins(){
+        new AlertDialog.Builder(this).setTitle("Successfully hid from the chasers!")
+                .setMessage("Through your cunningness and ingenuity, you have escaped." )
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToDashboard();
+                    }
+                }).show();
+    }
+
+    private void hiderLoses(String name){
+        new AlertDialog.Builder(this).setTitle("Got caught by " + name)
+                .setMessage("You have failed to escape." )
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToDashboard();
+                    }
+                }).show();
+    }
+
+    private void goToDashboard(){
+        Intent i = new Intent(this, Dashboard.class);
+        startActivity(i);
     }
 
     private void updateTime(){
         TextView tv = (TextView) findViewById(R.id.clock);
         time_elapsed = gl.startTime + 300000 - SystemClock.elapsedRealtime();
-        tv.setText(time_elapsed / 60000 + " : " + (time_elapsed % 60000)/1000);
+        long minutes = (time_elapsed % 60000)/1000;
+        tv.setText(time_elapsed / 60000 + ":" + (minutes >= 10 ? "" : "0") + minutes);
     }
 
     private void startScan(){
@@ -97,18 +159,11 @@ public class ChaserActivity extends AppCompatActivity {
                         correct_bytes++;
                     idx++;
                 }
-                /*
-                System.out.println(time_elapsed);
-                System.out.println(gl.startTime);
-                System.out.println(SystemClock.elapsedRealtime());
-
-                if(  gl.startTime + 300000 - (SystemClock.elapsedRealtime() + time_elapsed) < 1000 ){
-                    //System.out.println("Entered here");
-
-                    updateTime();
-                }*/
 
                 if(correct_bytes == 3 && gl.playerExists(device.getAddress())){
+                    if(rssi > -50){
+                        hiderLoses(gl.getPlayer(device.getAddress()));
+                    }
                     if(getColorFromDist(gl.playerDists.get(device.getAddress())) != getColorFromDist(rssi)){
                         gl.addLocation(device.getAddress(), rssi);
                         populateListView();
@@ -131,14 +186,15 @@ public class ChaserActivity extends AppCompatActivity {
 
     private static int getColorFromDist(int rsiiDistance){
         if(rsiiDistance > -60) {
-            return Color.rgb(255, 15, 15); // HUE 0
+            return Color.rgb(255, 0, 0); // HUE 0
         }
         if(rsiiDistance > -70)
-            return Color.rgb(244,137,14);// HUE 335
+           // return Color.rgb(255,205,152);// HUE 335
+            return Color.rgb(255,0,150);
         if(rsiiDistance > -80){
-            return Color.rgb(220,244,14); //HUE
+            return Color.rgb(150,0,255); //HUE
         }
-        return Color.rgb(14,240,244);
+        return Color.rgb(0,0,255);
     }
     private void populateListView(){
         ArrayList<String> chasers = gl.getTopPlayerNames();
@@ -148,9 +204,9 @@ public class ChaserActivity extends AppCompatActivity {
             int distance = (int) distances.get(i);
             TextView tv = (TextView) findViewById(R.id.name1 + i);
             FrameLayout.LayoutParams lParams = (FrameLayout.LayoutParams) tv.getLayoutParams();
-            lParams.topMargin = 200*i;
+            lParams.topMargin = 270 + 200*i; //220 is the height of the clock
             tv.setLayoutParams(lParams);
-            tv.setText(gl.getPlayer(chaser) + " " + distance);
+            tv.setText(gl.getPlayer(chaser));
             tv.setBackgroundColor(getColorFromDist(distance));
             i++;
         }

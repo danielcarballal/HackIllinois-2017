@@ -37,12 +37,9 @@ public class GameLogic {
     public HashMap<String, Integer> playerDists;
     public HashMap<String, Boolean> players; // Boolean checks if the player is a hider or seeker
     public HashMap<String, Long> timeStamp;
-    public PriorityQueue<Integer> pq;
     public Timer time;
     public long startTime;
-    Date date = new Date();
     private static GameLogic ref;
-    public boolean hider_wins = false;
 
     // Singleton constructor
     public static GameLogic getGameLogic(){
@@ -58,13 +55,6 @@ public class GameLogic {
         playerDists = new HashMap<String, Integer>();
         timeStamp = new HashMap<String, Long>();
         startTime = SystemClock.elapsedRealtime();
-    }
-
-    public String getPlayer(ScanResult result){
-        BluetoothDevice device = result.getDevice();
-        long newTime = date.getTime();
-        timeStamp.put(device.getAddress(), newTime);
-        return device.getAddress();
     }
 
     public String getPlayer(String macAddress){
@@ -84,49 +74,13 @@ public class GameLogic {
         return true;
     }
 
-    public void updateTime(ScanResult result){
-        BluetoothDevice device = result.getDevice();
-        String pid = device.getAddress();
-        long newTime = date.getTime();
-        timeStamp.put(pid, newTime);
-    }
-
-    public void checkPlayers(){
-        long newTime = date.getTime();
-        for (String key : timeStamp.keySet()){
-            if(newTime - timeStamp.get(key) >= 20){
-                timeStamp.remove(key);
-            }
-        }
-    }
-
-    public void endGame(){
-        time.cancel();
-        Log.d("VirtualHideAndSeek","Game ends.");
-    }
-
-
-    public void startGame(){
-        time = new Timer();
-        time.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                time.cancel();
-                hider_wins = true;
-            }
-        }, 300000);
-    }
-
     public void addLocation(String playerMac, int distance) {
         playerDists.put(playerMac, distance);
     }
 
-    Comparator<HashMap.Entry> comparator = new Comparator<HashMap.Entry>() {
-        @Override
-        public int compare(HashMap.Entry left, HashMap.Entry right) {
-            return (Integer) left.getValue() - (Integer) right.getValue(); // use your logic
-        }
-    };
+    public void startTimer(){
+        startTime = SystemClock.elapsedRealtime();
+    }
 
     // Returns the names of up to the top 5 players
     public ArrayList<String> getTopPlayerNames(){
@@ -139,8 +93,6 @@ public class GameLogic {
                 return (m2.getValue()).compareTo(m1.getValue());
             }
         });
-
-        Map<String, Integer> result = new LinkedHashMap<String, Integer>();
         int count = 0;
         for (Map.Entry<String, Integer> entry : list) {
             a.add(entry.getKey());
@@ -160,8 +112,6 @@ public class GameLogic {
                 return (m2.getValue()).compareTo(m1.getValue());
             }
         });
-
-        Map<String, Integer> result = new LinkedHashMap<String, Integer>();
         int count = 0;
         for (Map.Entry<String, Integer> entry : list) {
             a.add(entry.getValue());
